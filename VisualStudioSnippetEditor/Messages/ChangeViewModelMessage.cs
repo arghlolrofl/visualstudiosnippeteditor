@@ -1,7 +1,11 @@
-﻿namespace VisualStudioSnippetEditor.Messages
+﻿using VisualStudioSnippetEditor.Enums;
+
+namespace VisualStudioSnippetEditor.Messages
 {
   public class ChangeViewModelMessage
   {
-    public string ViewModelName { get; set; }
+    public ViewKind ViewKind { get; set; }
+
+    public object Parameter { get; set; }
   }
 }

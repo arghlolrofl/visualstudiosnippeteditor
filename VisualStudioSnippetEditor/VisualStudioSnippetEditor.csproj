@@ -77,20 +77,24 @@
     <Compile Include="Contracts\ISnippetHeader.cs" />
     <Compile Include="Contracts\ISnippetLiteral.cs" />
     <Compile Include="Contracts\ISnippetReader.cs" />
-    <Compile Include="Contracts\ProgrammingLanguage.cs" />
-    <Compile Include="Contracts\SnippetType.cs" />
+    <Compile Include="Contracts\ViewModelInfo.cs" />
+    <Compile Include="Enums\NotificationKind.cs" />
+    <Compile Include="Enums\ProgrammingLanguage.cs" />
+    <Compile Include="Enums\SnippetType.cs" />
     <Compile Include="Contracts\EntityBase.cs" />
-    <Compile Include="Extensions\ObservableCollection.cs" />
+    <Compile Include="Enums\ViewKind.cs" />
+    <Compile Include="Extensions\List.cs" />
     <Compile Include="Messages\ChangeViewModelMessage.cs" />
+    <Compile Include="Messages\ApplicationMessage.cs" />
     <Compile Include="Model\Snippet.cs" />
     <Compile Include="Model\SnippetCode.cs" />
     <Compile Include="Model\SnippetHeader.cs" />
     <Compile Include="Model\SnippetLiteral.cs" />
     <Compile Include="Parser\SnippetXmlReader.cs" />
-    <Compile Include="ViewModel\AnotherViewModel.cs" />
+    <Compile Include="ViewModel\EditViewModel.cs" />
     <Compile Include="ViewModel\StartViewModel.cs" />
-    <Compile Include="View\AnotherView.xaml.cs">
-      <DependentUpon>AnotherView.xaml</DependentUpon>
+    <Compile Include="View\EditView.xaml.cs">
+      <DependentUpon>EditView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\StartView.xaml.cs">
       <DependentUpon>StartView.xaml</DependentUpon>
@@ -107,7 +111,7 @@
       <DependentUpon>ApplicationWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\AnotherView.xaml">
+    <Page Include="View\EditView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

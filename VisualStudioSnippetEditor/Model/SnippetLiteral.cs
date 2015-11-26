@@ -7,6 +7,8 @@ namespace VisualStudioSnippetEditor.Model
     string _defaultValue;
     string _identifier;
     string _toolTip;
+    string _function;
+    bool? _isEditable;
 
     public string DefaultValue
     {
@@ -48,6 +50,18 @@ namespace VisualStudioSnippetEditor.Model
         _toolTip = value;
         RaisePropertyChanged();
       }
+    }
+
+    public string Function
+    {
+      get { return _function; }
+      set { _function = value; RaisePropertyChanged(); }
+    }
+
+    public bool? IsEditable
+    {
+      get { return _isEditable; }
+      set { _isEditable = value; RaisePropertyChanged(); }
     }
   }
 }

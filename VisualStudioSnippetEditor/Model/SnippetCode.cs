@@ -1,4 +1,5 @@
 ﻿using VisualStudioSnippetEditor.Contracts;
+using VisualStudioSnippetEditor.Enums;
 
 namespace VisualStudioSnippetEditor.Model
 {

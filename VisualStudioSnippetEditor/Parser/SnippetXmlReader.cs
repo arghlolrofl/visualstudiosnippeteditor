@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Autofac;
 using VisualStudioSnippetEditor.Contracts;
+using VisualStudioSnippetEditor.Enums;
 
 namespace VisualStudioSnippetEditor.Parser
 {
@@ -28,10 +31,16 @@ namespace VisualStudioSnippetEditor.Parser
 
       ISnippet snippet = _scope.Resolve<ISnippet>();
       XDocument doc = XDocument.Load(targetFile.FullName);
+      var format = doc.Root.Element(getXName("CodeSnippet")).Attribute("Format");
+      snippet.Format = Version.Parse(format.Value);
 
       XElement headerNode = doc.Descendants(getXName("Header")).First();
+      IEnumerable<XElement> literalNodes = doc.Descendants(getXName("Literal"));
+      XElement codeNode = doc.Descendants(getXName("Code")).First();
 
       parseSnippetHeader(headerNode, snippet.Header);
+      parseLiterals(literalNodes, snippet.Literals);
+      parseCode(codeNode, snippet.Code);
 
       return snippet;
     }
@@ -53,6 +62,41 @@ namespace VisualStudioSnippetEditor.Parser
         SnippetType snippetType = (SnippetType)Enum.Parse(typeof(SnippetType), element.Value);
         header.SnippetTypes.Add(snippetType);
       }
+    }
+
+    private void parseLiterals(IEnumerable<XElement> literalNodes, ObservableCollection<ISnippetLiteral> literals)
+    {
+      foreach (XElement literalNode in literalNodes)
+      {
+        XAttribute editableAttribute = literalNode.Attribute("Editable");
+        XElement idNode = literalNode.Element(getXName("ID"));
+        XElement tooltipNode = literalNode.Element(getXName("ToolTip"));
+        XElement defaultNode = literalNode.Element(getXName("Default"));
+        XElement functionNode = literalNode.Element(getXName("Function"));
+
+        ISnippetLiteral literal = _scope.Resolve<ISnippetLiteral>();
+        literal.Identifier = idNode.Value;
+        literal.DefaultValue = defaultNode.Value;
+        if (tooltipNode != null)
+          literal.ToolTip = tooltipNode.Value;
+        if (functionNode != null)
+          literal.Function = functionNode.Value;
+        if (editableAttribute != null)
+          literal.IsEditable = bool.Parse(editableAttribute.Value);
+
+        literals.Add(literal);
+      }
+    }
+
+    private void parseCode(XElement codeNode, ISnippetCode code)
+    {
+      XAttribute languageAttribute = codeNode.Attribute("Language");
+      ProgrammingLanguage lang;
+      Enum.TryParse(languageAttribute.Value, out lang);
+      if (lang != ProgrammingLanguage.None)
+        code.Language = lang;
+
+      code.Content = codeNode.Value;
     }
 
     private XName getXName(string nodeName)

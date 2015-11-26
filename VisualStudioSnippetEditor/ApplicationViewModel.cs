@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using GalaSoft.MvvmLight;
+using VisualStudioSnippetEditor.Contracts;
+using VisualStudioSnippetEditor.Enums;
 using VisualStudioSnippetEditor.Messages;
 using VisualStudioSnippetEditor.ViewModel;
 
@@ -11,26 +13,49 @@ namespace VisualStudioSnippetEditor
   public class ApplicationViewModel : ViewModelBase, IDisposable
   {
     ILifetimeScope _scope;
-    Dictionary<string, ViewModelBase> ViewModels;
+    ViewModelBase _currentViewModel;
+    List<ViewModelInfo> ViewModels;
 
-    public ViewModelBase CurrentViewModel { get; set; }
+    public ViewModelBase CurrentViewModel
+    {
+      get { return _currentViewModel; }
+      set { _currentViewModel = value; RaisePropertyChanged(); }
+    }
 
     public ApplicationViewModel(ILifetimeScope scope)
     {
       _scope = scope;
 
-      ViewModels = new Dictionary<string, ViewModelBase>()
+      ViewModels = new List<ViewModelInfo>()
       {
-        { nameof(StartViewModel), CurrentViewModel = _scope.Resolve<StartViewModel>() },
-        { nameof(AnotherViewModel), null }
+        new ViewModelInfo(ViewKind.None) { ViewModel = CurrentViewModel = _scope.Resolve<StartViewModel>() },
+        new ViewModelInfo(ViewKind.Edit)
       };
 
-      MessengerInstance.Register<ChangeViewModelMessage>(this, changeViewModel);
+      MessengerInstance.Register<ChangeViewModelMessage>(this, (msg) => changeViewModel(msg));
     }
 
     private void changeViewModel(ChangeViewModelMessage msg)
     {
-      CurrentViewModel = ViewModels.First(vm => vm.Key == msg.ViewModelName).Value;
+      var viewModelInfo = ViewModels.First((vmi) => vmi.ViewKind == msg.ViewKind);
+
+      if (viewModelInfo.ViewModel == null)
+      {
+        switch (viewModelInfo.ViewKind)
+        {
+          case ViewKind.None:
+            viewModelInfo.ViewModel = _scope.Resolve<StartViewModel>();
+            break;
+          case ViewKind.Edit:
+            viewModelInfo.ViewModel = _scope.Resolve<EditViewModel>();
+            (viewModelInfo.ViewModel as EditViewModel).Initialize((ISnippet)msg.Parameter);
+            break;
+          default:
+            break;
+        }
+      }
+
+      CurrentViewModel = viewModelInfo.ViewModel;
     }
 
     public void Dispose()

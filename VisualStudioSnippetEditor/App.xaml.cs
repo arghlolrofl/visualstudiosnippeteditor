@@ -2,7 +2,10 @@
 using System.Windows;
 using Autofac;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Messaging;
 using VisualStudioSnippetEditor.Contracts;
+using VisualStudioSnippetEditor.Enums;
+using VisualStudioSnippetEditor.Messages;
 using VisualStudioSnippetEditor.Model;
 using VisualStudioSnippetEditor.Parser;
 
@@ -13,6 +16,7 @@ namespace VisualStudioSnippetEditor
   /// </summary>
   public partial class App : Application
   {
+    private ILifetimeScope _scope;
     private static IContainer container;
     public static IContainer Container
     {
@@ -59,8 +63,11 @@ namespace VisualStudioSnippetEditor
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-      ApplicationWindow window = Container.BeginLifetimeScope().Resolve<ApplicationWindow>();
+      _scope = Container.BeginLifetimeScope();
+      ApplicationWindow window = _scope.Resolve<ApplicationWindow>();
       window.Show();
+
+      Messenger.Default.Send(new ApplicationMessage(NotificationKind.Initialized));
     }
   }
 }

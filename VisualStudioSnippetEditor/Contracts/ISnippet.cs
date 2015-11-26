@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using VisualStudioSnippetEditor.Enums;
 
 namespace VisualStudioSnippetEditor.Contracts
 {
   public interface ISnippet
   {
     string Name { get; }
+
+    ProgrammingLanguage Language { get; }
 
     Version Format { get; set; }
 

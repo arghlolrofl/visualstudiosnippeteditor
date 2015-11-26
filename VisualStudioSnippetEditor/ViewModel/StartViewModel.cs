@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Autofac;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 using VisualStudioSnippetEditor.Contracts;
+using VisualStudioSnippetEditor.Enums;
+using VisualStudioSnippetEditor.Messages;
 
 namespace VisualStudioSnippetEditor.ViewModel
 {
@@ -18,7 +20,14 @@ namespace VisualStudioSnippetEditor.ViewModel
 
     private ILifetimeScope _scope;
     private ObservableCollection<ISnippet> _snippets;
-    private ISnippetReader _snippetReader;
+
+    private RelayCommand<ISnippet> _editSnippetCommand;
+    public RelayCommand<ISnippet> EditSnippetCommand
+    {
+      get { return _editSnippetCommand; }
+      set { _editSnippetCommand = value; RaisePropertyChanged(); }
+    }
+
 
     #region Properties
 
@@ -35,75 +44,107 @@ namespace VisualStudioSnippetEditor.ViewModel
 
     #endregion
 
-    public StartViewModel(ILifetimeScope scope, ISnippetReader reader)
+    public StartViewModel(ILifetimeScope scope)
     {
-      _snippetReader = reader;
+      MessengerInstance.Register<ApplicationMessage>(this, HandleNotification);
+
       _scope = scope;
       Snippets = new ObservableCollection<ISnippet>();
 
-      scanForSnippets();
-
+      EditSnippetCommand = new RelayCommand<ISnippet>(LaunchSnippetEditor);
     }
 
     #region Private Methods
 
-    private void scanForSnippets()
+    private void HandleNotification(ApplicationMessage message)
     {
-      List<Task> tasks = new List<Task>();
-
-      foreach (var snippetFolder in Properties.Settings.Default.SnippetFolders)
+      switch (message.NotificationKind)
       {
-        Task task = Task.Run(() =>
-        {
-          Debug.WriteLine("Starting task ...");
-          scanSnippetFolder(snippetFolder);
-          Debug.WriteLine("Finished task ...");
-        });
-        tasks.Add(task);
+        case NotificationKind.Initialized:
+          scanForSnippets();
+          break;
+        default:
+          break;
       }
-
-      Task finalTask = Task.Factory.ContinueWhenAll(
-        tasks.ToArray(), (resultTasks) =>
-        {
-          Debug.WriteLine("Starting finalTask ...");
-          Debug.WriteLine("    Element count: " + Snippets.Count);
-          Application.Current.Dispatcher.BeginInvoke(
-            new Action(() => Snippets.BubbleSortBySnippetName()), DispatcherPriority.DataBind);
-          Debug.WriteLine("Finished finalTask ...");
-        }
-      );
-      Debug.WriteLine("Waiting for finalTask ...");
-      finalTask.Wait();
-      //Task waitTask = Task.WhenAll(tasks.ToArray());      
-      //waitTask.Wait();
-      //waitTask.ContinueWith((task) => Snippets.BubbleSortBySnippetName());
     }
 
-    private async void scanSnippetFolder(string snippetFolder)
+    private void scanForSnippets()
     {
-      Debug.WriteLine("Scanning snippet folder: " + snippetFolder);
+      IList<DirectoryInfo> snippetFolders = new List<DirectoryInfo>();
 
+      // Get valid folders to scan for from the config
+      foreach (var path in Properties.Settings.Default.SnippetFolders)
+      {
+        DirectoryInfo snippetDirectory = new DirectoryInfo(path);
+        if (!snippetDirectory.Exists)
+          throw new DirectoryNotFoundException("Directory not found: " + snippetDirectory.FullName);
+
+        snippetFolders.Add(snippetDirectory);
+      }
+
+      // Create and start scan task
+      Task<IList<ISnippet>> scanTask = new Task<IList<ISnippet>>(() => scanAllFolders(_scope.BeginLifetimeScope(), snippetFolders));
+      scanTask.ContinueWith((t) =>
+      {
+        // After scanTask has finished, we add the result to the UI property and sort the list
+        Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+        {
+          Snippets.AddRange(t.Result);
+          Snippets.BubbleSortBySnippetName();
+        }), DispatcherPriority.DataBind);
+      });
+      scanTask.Start();
+      scanTask.Wait();
+    }
+
+    private IList<ISnippet> scanAllFolders(ILifetimeScope scope, IList<DirectoryInfo> snippetFolders)
+    {
+      Task<IList<ISnippet>>[] scanTasks;
+
+      IList<ISnippet> snippets = new List<ISnippet>();
+
+      scanTasks = new Task<IList<ISnippet>>[snippetFolders.Count];
+      for (int i = 0; i < scanTasks.Length; i++)
+      {
+        var folder = snippetFolders[i];
+        var reader = scope.Resolve<ISnippetReader>();
+        scanTasks[i] = new Task<IList<ISnippet>>(() => scanFolder(folder, reader), TaskCreationOptions.AttachedToParent);
+        scanTasks[i].Start();
+      }
+
+      Task<IList<ISnippet>>.WaitAll(scanTasks);
+      foreach (var scanTask in scanTasks)
+      {
+        if (scanTask.Result != null)
+          snippets.AddRange(scanTask.Result);
+      }
+
+      return snippets;
+    }
+
+    private IList<ISnippet> scanFolder(DirectoryInfo directory, ISnippetReader snippetReader)
+    {
       try
       {
-        DirectoryInfo directory = new DirectoryInfo(snippetFolder);
-        if (!directory.Exists)
-          throw new DirectoryNotFoundException("Directory not found: " + directory.FullName);
-
+        IList<ISnippet> snippets = new List<ISnippet>();
         var snippetsInFolder = directory.GetFiles("*.snippet", SearchOption.TopDirectoryOnly);
         foreach (var snippetInFolder in snippetsInFolder)
         {
-          ISnippet snippet = _snippetReader.Parse(snippetInFolder);
-
-          await Application.Current.Dispatcher.BeginInvoke(
-            new Action(() => Snippets.Add(snippet)), DispatcherPriority.Normal);
+          ISnippet snippet = snippetReader.Parse(snippetInFolder);
+          snippets.Add(snippet);
         }
 
-        Debug.WriteLine("Task finished ...");
+        return snippets;
       }
-      catch (Exception ex)
+      catch (Exception)
       {
-        MessageBox.Show("Error while scanning snippet folders: " + ex.Message);
+        return null;
       }
+    }
+
+    private void LaunchSnippetEditor(ISnippet snippet)
+    {
+      MessengerInstance.Send(new ChangeViewModelMessage() { ViewKind = ViewKind.Edit, Parameter = snippet });
     }
 
     #endregion

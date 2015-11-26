@@ -6,8 +6,14 @@ using VisualStudioSnippetEditor.Contracts;
 
 namespace VisualStudioSnippetEditor
 {
-  public static class ObservableCollectionExtension
+  public static class ListExtensions
   {
+    public static void AddRange(this IList<ISnippet> list, IEnumerable<ISnippet> items)
+    {
+      foreach (var item in items)
+        list.Add(item);
+    }
+
     public static void BubbleSortBySnippetName(this IList<ISnippet> list)
     {
       Debug.WriteLine("Sorting ISnippet list with elements: " + list.Count);

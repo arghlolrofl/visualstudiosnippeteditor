@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using VisualStudioSnippetEditor.Enums;
 
 namespace VisualStudioSnippetEditor.Contracts
 {

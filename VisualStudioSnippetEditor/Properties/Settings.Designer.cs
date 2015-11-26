@@ -28,6 +28,7 @@ namespace VisualStudioSnippetEditor.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <string>C:\Users\HenI\Documents\Visual Studio 2015\Code Snippets\Visual C#\My Code Snippets\</string>
+  <string>C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC#\Snippets\1033\Visual C#\</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection SnippetFolders {
             get {

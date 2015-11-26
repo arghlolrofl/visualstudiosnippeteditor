@@ -9,7 +9,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
         mc:Ignorable="d"
-        Title="{Binding Path=CurrentViewModel.WindowTitle}" Height="350" Width="525">
+        Title="{Binding Path=CurrentViewModel.WindowTitle}" Height="480" Width="640">
     <!--<i:Interaction.Triggers>
         <i:EventTrigger EventName="MouseDown">
             <cmd:EventToCommand Command="{Binding Mode=OneWay, Path=ClickCommand}" PassEventArgsToCommand="False" />
@@ -19,8 +19,8 @@
         <DataTemplate DataType="{x:Type vm:StartViewModel}">
             <view:StartView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:AnotherViewModel}">
-            <view:AnotherView />
+        <DataTemplate DataType="{x:Type vm:EditViewModel}">
+            <view:EditView />
         </DataTemplate>
     </Window.Resources>
     <ContentControl Content="{Binding Path=CurrentViewModel}" />

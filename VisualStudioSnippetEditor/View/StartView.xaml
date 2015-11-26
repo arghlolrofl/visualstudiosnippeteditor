@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:VisualStudioSnippetEditor.View"
              xmlns:vm="clr-namespace:VisualStudioSnippetEditor.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="480" d:DesignWidth="640">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -14,6 +14,27 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ListView ItemsSource="{Binding Snippets}" DisplayMemberPath="Name" />
+        <ListView ItemsSource="{Binding Snippets}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=Name}" Width="250" />
+                    <GridViewColumn Header="Language" DisplayMemberBinding="{Binding Path=Language}" Width="65" />
+                    <GridViewColumn Header="Format" DisplayMemberBinding="{Binding Path=Format}" Width="65" />
+                    <GridViewColumn Header="Action" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Width="60"
+                                        Height="20" 
+                                        BorderThickness="0"
+                                        Command="{Binding Path=DataContext.EditSnippetCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                        CommandParameter="{Binding}"
+                                        Content="Edit">
+                                </Button>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </UserControl>

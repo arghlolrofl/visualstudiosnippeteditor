@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using VisualStudioSnippetEditor.Contracts;
+using VisualStudioSnippetEditor.Enums;
 
 namespace VisualStudioSnippetEditor.Model
 {
@@ -42,6 +43,14 @@ namespace VisualStudioSnippetEditor.Model
     {
       get { return _code; }
       set { _code = value; RaisePropertyChanged(); }
+    }
+
+    public ProgrammingLanguage Language
+    {
+      get
+      {
+        return Code.Language;
+      }
     }
 
     #endregion

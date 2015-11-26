@@ -3,11 +3,11 @@
 namespace VisualStudioSnippetEditor.View
 {
   /// <summary>
-  /// Interaction logic for AnotherView.xaml
+  /// Interaction logic for EditView.xaml
   /// </summary>
-  public partial class AnotherView : UserControl
+  public partial class EditView : UserControl
   {
-    public AnotherView()
+    public EditView()
     {
       InitializeComponent();
     }

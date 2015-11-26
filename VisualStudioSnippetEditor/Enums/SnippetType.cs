@@ -1,4 +1,4 @@
-﻿namespace VisualStudioSnippetEditor.Contracts
+﻿namespace VisualStudioSnippetEditor.Enums
 {
   public enum SnippetType
   {

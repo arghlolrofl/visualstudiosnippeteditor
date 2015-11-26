@@ -1,4 +1,6 @@
-﻿namespace VisualStudioSnippetEditor.Contracts
+﻿using VisualStudioSnippetEditor.Enums;
+
+namespace VisualStudioSnippetEditor.Contracts
 {
   public interface ISnippetCode
   {
