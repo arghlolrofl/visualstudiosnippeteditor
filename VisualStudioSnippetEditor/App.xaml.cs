@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using System.Windows;
 using Autofac;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using VisualStudioSnippetEditor.Contracts;
 using VisualStudioSnippetEditor.Enums;
@@ -38,15 +37,14 @@ namespace VisualStudioSnippetEditor
 
     private static void Bootstrap()
     {
-      Assembly assembly = Assembly.GetExecutingAssembly();
       ContainerBuilder builder = new ContainerBuilder();
 
       // Views
       builder.RegisterType<ApplicationWindow>().SingleInstance();
 
       // ViewModels
-      builder.RegisterAssemblyTypes(assembly)
-        .Where((t) => t.IsSubclassOf(typeof(ViewModelBase)))
+      builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+        .Where((t) => t.IsSubclassOf(typeof(GalaSoft.MvvmLight.ViewModelBase)))
         .SingleInstance();
 
       // Entities

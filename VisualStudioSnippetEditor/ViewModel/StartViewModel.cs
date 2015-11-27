@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Autofac;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using VisualStudioSnippetEditor.Contracts;
 using VisualStudioSnippetEditor.Enums;
@@ -14,7 +13,7 @@ using VisualStudioSnippetEditor.Messages;
 
 namespace VisualStudioSnippetEditor.ViewModel
 {
-  public class StartViewModel : ViewModelBase
+  public class StartViewModel : Contracts.ViewModelBase
   {
     const string WindowTitleText = "Code Snippets";
 
@@ -31,7 +30,7 @@ namespace VisualStudioSnippetEditor.ViewModel
 
     #region Properties
 
-    public string WindowTitle
+    public override string WindowTitle
     {
       get { return WindowTitleText; }
     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
-using GalaSoft.MvvmLight;
 using VisualStudioSnippetEditor.Contracts;
 using VisualStudioSnippetEditor.Enums;
 using VisualStudioSnippetEditor.Messages;
@@ -10,13 +9,13 @@ using VisualStudioSnippetEditor.ViewModel;
 
 namespace VisualStudioSnippetEditor
 {
-  public class ApplicationViewModel : ViewModelBase, IDisposable
+  public class ApplicationViewModel : GalaSoft.MvvmLight.ViewModelBase, IDisposable
   {
     ILifetimeScope _scope;
-    ViewModelBase _currentViewModel;
+    Contracts.ViewModelBase _currentViewModel;
     List<ViewModelInfo> ViewModels;
 
-    public ViewModelBase CurrentViewModel
+    public Contracts.ViewModelBase CurrentViewModel
     {
       get { return _currentViewModel; }
       set { _currentViewModel = value; RaisePropertyChanged(); }
