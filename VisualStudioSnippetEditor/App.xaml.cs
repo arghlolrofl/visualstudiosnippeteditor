@@ -33,8 +33,7 @@ namespace VisualStudioSnippetEditor
       }
     }
 
-
-
+    
     private static void Bootstrap()
     {
       ContainerBuilder builder = new ContainerBuilder();
@@ -62,8 +61,7 @@ namespace VisualStudioSnippetEditor
     private void Application_Startup(object sender, StartupEventArgs e)
     {
       _scope = Container.BeginLifetimeScope();
-      ApplicationWindow window = _scope.Resolve<ApplicationWindow>();
-      window.Show();
+      _scope.Resolve<ApplicationWindow>().Show();
 
       Messenger.Default.Send(new ApplicationMessage(NotificationKind.Initialized));
     }

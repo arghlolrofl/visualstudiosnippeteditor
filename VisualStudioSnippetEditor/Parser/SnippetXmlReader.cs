@@ -76,13 +76,11 @@ namespace VisualStudioSnippetEditor.Parser
 
         ISnippetLiteral literal = _scope.Resolve<ISnippetLiteral>();
         literal.Identifier = idNode.Value;
-        literal.DefaultValue = defaultNode.Value;
-        if (tooltipNode != null)
-          literal.ToolTip = tooltipNode.Value;
-        if (functionNode != null)
-          literal.Function = functionNode.Value;
+        literal.DefaultValue = defaultNode?.Value;
+        literal.ToolTip = tooltipNode?.Value;
+        literal.Function = functionNode?.Value;
         if (editableAttribute != null)
-          literal.IsEditable = bool.Parse(editableAttribute.Value);
+          literal.IsEditable = bool.Parse(editableAttribute?.Value);
 
         literals.Add(literal);
       }

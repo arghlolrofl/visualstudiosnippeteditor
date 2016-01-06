@@ -107,16 +107,13 @@ namespace VisualStudioSnippetEditor.ViewModel
       {
         var folder = snippetFolders[i];
         var reader = scope.Resolve<ISnippetReader>();
-        scanTasks[i] = new Task<IList<ISnippet>>(() => scanFolder(folder, reader), TaskCreationOptions.AttachedToParent);
-        scanTasks[i].Start();
+        scanTasks[i] = Task.Factory.StartNew<IList<ISnippet>>(() => scanFolder(folder, reader), TaskCreationOptions.AttachedToParent);
       }
 
       Task<IList<ISnippet>>.WaitAll(scanTasks);
       foreach (var scanTask in scanTasks)
-      {
         if (scanTask.Result != null)
           snippets.AddRange(scanTask.Result);
-      }
 
       return snippets;
     }
@@ -135,7 +132,7 @@ namespace VisualStudioSnippetEditor.ViewModel
 
         return snippets;
       }
-      catch (Exception)
+      catch (Exception ex)
       {
         return null;
       }
