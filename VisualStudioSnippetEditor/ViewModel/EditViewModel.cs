@@ -1,5 +1,8 @@
 ﻿using System;
+using GalaSoft.MvvmLight.CommandWpf;
 using VisualStudioSnippetEditor.Contracts;
+using VisualStudioSnippetEditor.Enums;
+using VisualStudioSnippetEditor.Messages;
 
 namespace VisualStudioSnippetEditor.ViewModel
 {
@@ -7,6 +10,8 @@ namespace VisualStudioSnippetEditor.ViewModel
   {
     const string WindowTitleText = "Edit Snippet - {0}";
     private ISnippet _snippet;
+
+    public RelayCommand LeaveEditModeCommand { get; set; }
 
     public override string WindowTitle
     {
@@ -19,6 +24,13 @@ namespace VisualStudioSnippetEditor.ViewModel
       set { _snippet = value; RaisePropertyChanged(); }
     }
 
+    public EditViewModel()
+    {
+      LeaveEditModeCommand = new RelayCommand(() =>
+      {
+        MessengerInstance.Send(new ChangeViewModelMessage() { ViewKind = ViewKind.None });
+      });
+    }
 
     public void Initialize(ISnippet snippet)
     {

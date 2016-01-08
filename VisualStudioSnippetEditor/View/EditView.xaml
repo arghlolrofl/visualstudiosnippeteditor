@@ -7,6 +7,36 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <TextBlock Text="{Binding Path=Snippet.Name}" />        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="25" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="25" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="25" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="1" Orientation="Horizontal">
+            <Button Content="Back" Width="70" Height="22" Margin="5,0,0,0" Command="{Binding LeaveEditModeCommand}"/>
+            <Button Content="Save" Width="70" Height="22" Margin="5,0,0,0" />
+        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Grid.RowSpan="1" Orientation="Horizontal">
+            <Label Content="Snippet: " Grid.Column="0" Grid.Row="1" Width="75" HorizontalContentAlignment="Right" />
+            <TextBox Text="{Binding Path=Snippet.Name, Mode=OneWay}" Width="100" />
+        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Grid.RowSpan="1" Orientation="Horizontal">
+            <Label Content="Language: " Grid.Column="0" Grid.Row="1" Width="75" HorizontalContentAlignment="Right" />
+            <TextBox Text="{Binding Path=Snippet.Language, Mode=OneWay}" Width="100" />
+        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Grid.RowSpan="1" Orientation="Horizontal">
+            <Label Content="Format: " Grid.Column="0" Grid.Row="1" Width="75" HorizontalContentAlignment="Right" />
+            <TextBox Text="{Binding Path=Snippet.Format}" Width="100" />
+        </StackPanel>
     </Grid>
 </UserControl>
